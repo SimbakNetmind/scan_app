@@ -1,37 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:scan_app/src/bloc/scan_bloc.dart';
 import 'package:scan_app/src/models/scan_model.dart';
+import 'package:scan_app/src/utils/utils.dart' as utils;
 
 
-class MapasPage extends StatefulWidget {
-  MapasPage();
-
-  @override
-  _MapasPageState createState() {
-    return _MapasPageState();
-  }
-}
-
-class _MapasPageState extends State<MapasPage> {
+class MapasPage extends StatelessWidget {
 
   final scansBloc = new ScansBloc();
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
 
     scansBloc.obtenerScans();
-    return StreamBuilder<List<ScanModel>>(
-       stream: scansBloc.scansStream,
-        builder: (BuildContext context, AsyncSnapshot<List<ScanModel>> snapshot){
+
+    return Scaffold(
+      body: StreamBuilder<List<ScanModel>>(
+        stream: scansBloc.scansStream,
+        builder: (BuildContext context, AsyncSnapshot<List<ScanModel>> snapshot) {
 
           if ( !snapshot.hasData ) {
             return Center(child: CircularProgressIndicator());
@@ -44,6 +29,7 @@ class _MapasPageState extends State<MapasPage> {
               child: Text('No hay información'),
             );
           }
+
           return ListView.builder(
               itemCount: scans.length,
               itemBuilder: (context, i ) => Dismissible(
@@ -52,14 +38,18 @@ class _MapasPageState extends State<MapasPage> {
                   onDismissed: ( direction ) => scansBloc.borrarScan(scans[i].id!),
                   child: ListTile(
                     leading: Icon( Icons.map, color: Theme.of(context).primaryColor ),
-                    title: Text(scans[i].valor! ),
+                    title: Text( scans[i].valor! ),
                     subtitle: Text('ID: ${ scans[i].id }'),
                     trailing: Icon( Icons.keyboard_arrow_right, color: Colors.grey ),
-                    onTap: () => {},
+                    onTap: () => utils.abrirScan(context, scans[i]),
                   )
               )
           );
 
-        });
+
+        },
+      ),
+    );
+
   }
 }

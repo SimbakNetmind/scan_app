@@ -34,16 +34,19 @@ class _HomePageState extends State<HomePage> {
 
 
 
-  _scanQR() async{
+  _scanQR(BuildContext context) async{
     try{
 
        String futureString="";
-       futureString ="https://www.youtube.com/watch?v=JrQd2XVwMCM";
-
+      // futureString ="https://www.youtube.com/watch?v=JrQd2XVwMCM";
+     futureString ="http://engranedigital.com/blogs-sobre-programacion-que-deberias-agregar-a-tus-marcadores-a-partir-de-hoy";
        if(futureString.isNotEmpty){
          final scan = ScanModel( valor: futureString );
          scansBloc.agregarScan(scan);
 
+          String geo ="geo:40.724233047051705,-74.00731459101564";
+         final scan2 = ScanModel( valor: geo);
+         scansBloc.agregarScan(scan2);
        }
 
       // var result  = await BarcodeScanner.scan(options: ScanOptions(
@@ -84,11 +87,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton:FloatingActionButton(
         onPressed:(){
 
-          _scanQR();
-          // Navigator.push(
-          //   context,
-          //  // MaterialPageRoute(builder: (context) => Scanner()),
-          // );
+          _scanQR(context);
         },
         child: Icon( Icons.filter_center_focus ),
       ) ,
