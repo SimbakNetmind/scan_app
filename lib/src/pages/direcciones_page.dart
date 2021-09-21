@@ -1,30 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:scan_app/src/bloc/scan_bloc.dart';
+import 'package:scan_app/src/models/scan_model.dart';
+import 'package:scan_app/src/utils/utils.dart' as utils;
 
-class DireccionesPage extends StatefulWidget {
-  DireccionesPage();
+class DireccionesPage extends StatelessWidget {
 
-  @override
-  _DireccionesPageState createState() {
-    return _DireccionesPageState();
-  }
-}
-
-class _DireccionesPageState extends State<DireccionesPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  final scansBloc = new ScansBloc();
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Center(
-      child: Text("Direcciones Page"),
+
+    scansBloc.obtenerScans();
+
+    return Scaffold(
+      body: StreamBuilder<List<ScanModel>>(
+        stream: scansBloc.scansStreamHttp,
+        builder: (BuildContext context, AsyncSnapshot<List<ScanModel>> snapshot) {
+
+          if ( !snapshot.hasData ) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final scans = snapshot.data;
+
+          if ( scans!.length == 0 ) {
+            return Center(
+              child: Text('No hay información'),
+            );
+          }
+
+          return ListView.builder(
+              itemCount: scans.length,
+              itemBuilder: (context, i ) => Dismissible(
+                  key: UniqueKey(),
+                  background: Container( color: Colors.red ),
+                  onDismissed: ( direction ) => scansBloc.borrarScan(scans[i].id!),
+                  child: ListTile(
+                    leading: Icon( Icons.map, color: Theme.of(context).primaryColor ),
+                    title: Text( scans[i].valor! ),
+                    subtitle: Text('ID: ${ scans[i].id }'),
+                    trailing: Icon( Icons.keyboard_arrow_right, color: Colors.grey ),
+                    onTap: () => utils.abrirScan(context, scans[i]),
+                  )
+              )
+          );
+
+
+        },
+      ),
     );
+
   }
 }

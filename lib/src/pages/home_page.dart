@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:flutter/material.dart';
 import 'package:scan_app/src/bloc/scan_bloc.dart';
 import 'package:scan_app/src/models/scan_model.dart';
 import 'package:scan_app/src/widgets/bodyTaps.dart';
 import 'package:scan_app/src/widgets/navigation_bar.dart';
-
+import 'package:scan_app/src/utils/utils.dart' as utils;
 
 
 class HomePage extends StatefulWidget {
@@ -35,31 +37,35 @@ class _HomePageState extends State<HomePage> {
 
 
   _scanQR(BuildContext context) async{
-    try{
 
-       String futureString="";
-      // futureString ="https://www.youtube.com/watch?v=JrQd2XVwMCM";
-     futureString ="http://engranedigital.com/blogs-sobre-programacion-que-deberias-agregar-a-tus-marcadores-a-partir-de-hoy";
-       if(futureString.isNotEmpty){
-         final scan = ScanModel( valor: futureString );
-         scansBloc.agregarScan(scan);
+    String futureString;
 
-          String geo ="geo:40.724233047051705,-74.00731459101564";
-         final scan2 = ScanModel( valor: geo);
-         scansBloc.agregarScan(scan2);
-       }
-
-      // var result  = await BarcodeScanner.scan(options: ScanOptions(
-      //   autoEnableFlash: true
-      // ));
-      //
-      // futureString = result.rawContent;
-      // print("THIS IS THE URL  $futureString");
-
-    }catch(ex){
-
-      print("ERROR SCANN $ex.toString()");
+    try {
+      var result  = await BarcodeScanner.scan(options: ScanOptions(
+        autoEnableFlash: true
+      ));
+      futureString = result.rawContent;
+    } catch(e) {
+      futureString = e.toString();
     }
+
+    if ( futureString != null ) {
+
+      final scan = ScanModel( valor: futureString );
+      scansBloc.agregarScan(scan);
+
+      if ( Platform.isIOS ) {
+        Future.delayed( Duration( milliseconds: 750 ), () {
+          utils.abrirScan(context, scan);
+        });
+      } else {
+        utils.abrirScan(context, scan);
+      }
+
+    }
+
+
+
   }
 
 
