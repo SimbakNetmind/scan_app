@@ -13,7 +13,7 @@ class MapaPage extends StatefulWidget {
 }
 
 class _MapaPageState extends State<MapaPage> {
-
+  final map = new MapController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class _MapaPageState extends State<MapaPage> {
           IconButton(
             icon: Icon(Icons.my_location),
             onPressed: (){
-
+              map.move(scan.getLatLng(), 15);
             },
           )
         ],
@@ -36,47 +36,19 @@ class _MapaPageState extends State<MapaPage> {
     );
   }
 
-  // Widget  _mymap(){
-  //  return FlutterMap(
-  //     options: new MapOptions(
-  //       center: new LatLng(51.5, -0.09),
-  //       zoom: 13.0,
-  //     ),
-  //     layers: [
-  //       new TileLayerOptions(
-  //         urlTemplate: "https://atlas.microsoft.com/map/tile/png?api-version=1&layer=basic&style=main&tileSize=256&view=Auto&zoom={z}&x={x}&y={y}&subscription-key={subscriptionKey}",
-  //         additionalOptions: {
-  //           'subscriptionKey': '<YOUR_AZURE_MAPS_SUBSCRIPTON_KEY>'
-  //         },
-  //       ),
-  //       new MarkerLayerOptions(
-  //         markers: [
-  //           new Marker(
-  //             width: 80.0,
-  //             height: 80.0,
-  //             point: new LatLng(51.5, -0.09),
-  //             builder: (ctx) =>
-  //             new Container(
-  //               child: Text("Sometind"),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ],
-  //   );
-  // }
-
 
   Widget _crearFlutterMap( ScanModel scan ) {
 
     print("CORDENADAS ${scan.getLatLng()}");
     return FlutterMap(
+      mapController: map,
       options: MapOptions(
           center: scan.getLatLng(),
           zoom: 15
       ),
       layers: [
         _crearMapa(),
+        _crearMarcadores(scan)
       ],
     );
 
@@ -93,6 +65,28 @@ class _MapaPageState extends State<MapaPage> {
           // streets, dark, light, outdoors, satellite
         }
     );
+  }
+
+
+  _crearMarcadores( ScanModel scan ) {
+
+    return MarkerLayerOptions(
+        markers: <Marker>[
+          Marker(
+              width: 100.0,
+              height: 100.0,
+              point: scan.getLatLng(),
+              builder: ( context ) => Container(
+                child: Icon(
+                  Icons.location_on,
+                  size: 70.0,
+                  color: Theme.of(context).primaryColor,
+                ),
+              )
+          )
+        ]
+    );
+
   }
 
 }
