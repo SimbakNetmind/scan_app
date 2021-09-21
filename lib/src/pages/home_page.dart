@@ -1,7 +1,7 @@
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:flutter/material.dart';
+import 'package:scan_app/src/bloc/scan_bloc.dart';
 import 'package:scan_app/src/models/scan_model.dart';
-import 'package:scan_app/src/providers/db_provider.dart';
 import 'package:scan_app/src/widgets/bodyTaps.dart';
 import 'package:scan_app/src/widgets/navigation_bar.dart';
 
@@ -17,6 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final scansBloc = new ScansBloc();
   String? _platformVersion = 'Unknown';
 
   int _index =0;
@@ -31,20 +32,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-// _scanQR() async{
-//     String futureString="";
-//     try{
-//       futureString =  (await BarcodeScanner.scan()) as String;
-//     }catch(ex){
-//       futureString = ex.toString();
-//      print(ex);
-//
-//     }
-//     print("Future String :$futureString");
-//     if(!futureString.isNotEmpty){
-//       print("Tenemos informacion");
-//     }
-// }
+
 
   _scanQR() async{
     try{
@@ -53,8 +41,8 @@ class _HomePageState extends State<HomePage> {
        futureString ="https://www.youtube.com/watch?v=JrQd2XVwMCM";
 
        if(futureString.isNotEmpty){
-         final scan = ScanModel(valor:futureString);
-         DBProvider.db.nuevoScan(scan);
+         final scan = ScanModel( valor: futureString );
+         scansBloc.agregarScan(scan);
 
        }
 
@@ -81,7 +69,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title:Text("QR Scanner"),
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.delete_forever))
+          IconButton(onPressed: scansBloc.borrarScanTODOS, icon: Icon(Icons.delete_forever))
         ],
       ),
      body: BodyTaps.getPage(_index),
